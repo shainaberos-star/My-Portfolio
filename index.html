@@ -63,6 +63,7 @@
         .sidebar {
             position: sticky;
             top: 24px;
+            z-index: 30;
             align-self: start;
             min-height: calc(100vh - 48px);
             padding: 28px 20px;
@@ -73,8 +74,8 @@
             backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
-            align-items: center
-            z-index: 30;
+            align-items: center;
+            
         }
 
         .brand {
@@ -638,6 +639,28 @@
             *:after {
                 transition: none !important
             }
+            /* Falling hearts & snow */
+.falling {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;   
+  z-index: 5;            
+}
+.flake {
+  position: absolute;
+  top: 0;
+  user-select: none;
+  animation: fall linear infinite, sway ease-in-out infinite alternate;
+}
+@keyframes fall {
+  from { translate: 0 -10vh; }
+  to   { translate: 0 110vh; }
+}
+@keyframes sway {
+  from { transform: translateX(-16px) rotate(-18deg); }
+  to   { transform: translateX(16px) rotate(18deg); }
+}
         }
     </style>
 </head>
@@ -817,8 +840,31 @@ links.forEach(l => l.addEventListener('click', () => {
   clearTimeout(lockTimer);
   lockTimer = setTimeout(() => { lock = false; }, 900);
 }));
-        { rootMargin: '-35% 0px -55% 0px' };
-            sections.forEach(section => observer.observe(section));
+     /* Falling hearts & snow */
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const box = document.createElement('div');
+  box.className = 'falling';
+  box.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(box);
+
+  const shapes = ['♡', '♥', '❄', '✦', '✧'];
+  const colors = ['#f4a9d0', '#e58fbf', '#c9a7ee', '#b78bd1', '#d9b8f0'];
+  const count = window.innerWidth < 680 ? 14 : 28;   // mas konti sa phone
+
+  for (let i = 0; i < count; i++) {
+    const f = document.createElement('span');
+    const fall = 8 + Math.random() * 10;              // bilis ng pagbagsak (segundo)
+    f.className = 'flake';
+    f.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+    f.style.left = Math.random() * 100 + 'vw';
+    f.style.fontSize = 12 + Math.random() * 18 + 'px';
+    f.style.color = colors[Math.floor(Math.random() * colors.length)];
+    f.style.opacity = 0.5 + Math.random() * 0.4;
+    f.style.animationDuration = fall + 's, ' + (2 + Math.random() * 3) + 's';
+    f.style.animationDelay = -Math.random() * fall + 's, 0s';   // para hindi sabay-sabay ang simula
+    box.appendChild(f);
+  }
+}
         
     </script>
 </body>
